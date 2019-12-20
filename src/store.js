@@ -1,12 +1,12 @@
 import { createStore } from "redux";
 
 const reducer = (state, action) => {
-	if (action.type === "ADD_tO_CART") {
+	if (action.type == "ADD_TO_CART") {
 		return {
 			...state,
 			cart: state.cart.concat(action.product)
 		};
-	} else if (action.type === "REMOVE_FROM_CART") {
+	} else if (action.type == "REMOVE_FROM_CART") {
 		return {
 			...state,
 			cart: state.cart.filter(product => product.id !== action.product.id)
@@ -14,5 +14,7 @@ const reducer = (state, action) => {
 	}
 	return state;
 };
+
+
 
 export default createStore(reducer, { cart: [] });
