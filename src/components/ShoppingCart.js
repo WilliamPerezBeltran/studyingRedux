@@ -1,8 +1,7 @@
-
-import React, { Component } from "react";
+import React from "react";
 import { Panel, Table, Button, Glyphicon } from "react-bootstrap";
-import store from "../store";
 import { removeFromCart } from "../actionCreators";
+import { connect } from "react-redux";
 
 const styles = {
   footer: {
@@ -10,28 +9,16 @@ const styles = {
   }
 };
 
-class ShoppingCart extends Component {
-  constructor() {
-    super();
-    this.removeFromCart = this.removeFromCart.bind(this);
 
-    this.state = {
-      cart: []
-    };
-
-    store.subscribe(() => {
-      this.setState({
-        cart: store.getState().cart
-      });
-    });
-  }
-
-  render() {
+// esto se llama destructurar un argumento en emaascript 2015
+const ShoppingCart=({cart,removeFromCart})=> {
+// const ShoppingCart=(props)=> {
     return (
       <Panel header="Shopping Cart">
         <Table fill>
           <tbody>
-            {this.state.cart.map(product => (
+            {cart.map(product => (
+            // {props.cart.map(product => (
               <tr key={product.id}>
                 <td>{product.name}</td>
                 <td className="text-right">${product.price}</td>
@@ -39,7 +26,8 @@ class ShoppingCart extends Component {
                   <Button
                     bsSize="xsmall"
                     bsStyle="danger"
-                    onClick={() => this.removeFromCart(product)}
+                    onClick={() => removeFromCart(product)}
+                    // onClick={() => props.removeFromCart(product)}
                   >
                     <Glyphicon glyph="trash" />
                   </Button>
@@ -51,7 +39,8 @@ class ShoppingCart extends Component {
             <tr>
               <td colSpan="4" style={styles.footer}>
                 Total: $
-                {this.state.cart.reduce(
+                {cart.reduce(
+                // {props.cart.reduce(
                   (sum, product) => sum + product.price,
                   0
                 )}
@@ -61,11 +50,23 @@ class ShoppingCart extends Component {
         </Table>
       </Panel>
     );
-  }
-
-  removeFromCart(product) {
-    store.dispatch(removeFromCart(product));
-  }
 }
+// le pasamos las varialbe sque tenemos en el store en
+// este caso sera solo la variable cart
+const mapStateToPros = state => {
+  return {
+    cart: state.cart
+  };
+};
 
-export default ShoppingCart;
+
+// le pasamos las funciones que queremos pasarle
+const dispatchStateToPros = dispatch => {
+  return {
+    removeFromCart(product) {
+      dispatch(removeFromCart(product));
+    }
+  };
+};
+
+export default connect(mapStateToPros,dispatchStateToPros)(ShoppingCart);
