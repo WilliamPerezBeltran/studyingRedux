@@ -1,21 +1,23 @@
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, combineReducers } from "redux";
 
-const reducer = (state, action) => {
+// si el estado inicial fuera mas complejo seria necesario
+// pasarselo asi:
+
+// const initState={}
+
+// const products = (state=initState, action) => {
+const products = (state = [], action) => {
+	if (action.type == "REPLACE_PRODUCTS") {
+		return action.products;
+	}
+	return state;
+};
+
+const cart = (state = [], action) => {
 	if (action.type == "ADD_TO_CART") {
-		return {
-			...state,
-			cart: state.cart.concat(action.product)
-		};
+		return state.concat(action.product);
 	} else if (action.type == "REMOVE_FROM_CART") {
-		return {
-			...state,
-			cart: state.cart.filter(product => product.id !== action.product.id)
-		};
-	} else if (action.type == "REPLACE_PRODUCTS") {
-		return {
-			...state,
-			products: action.products
-		};
+		return state.filter(product => product.id !== action.product.id);
 	}
 	return state;
 };
@@ -28,7 +30,6 @@ const logger = store => next => action => {
 };
 
 export default createStore(
-	reducer,
-	{ cart: [], product: [] },
+	combineReducers({ cart: cart, products: products }),
 	applyMiddleware(logger)
 );
